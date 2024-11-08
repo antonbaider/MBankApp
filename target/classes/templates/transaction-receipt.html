@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header img {
+            width: 200px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .table-container {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .details-table th, .details-table td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        .details-table th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+
+        .details-table td {
+            background-color: #ecf0f1;
+        }
+
+        .footer {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e4e8;
+        }
+
+        .footer img {
+            width: 24px;
+            height: 24px;
+            margin: 0 8px;
+            vertical-align: middle;
+        }
+
+        .footer-links {
+            margin-top: 10px;
+        }
+
+        .footer-links a {
+            margin: 0 8px;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .bottom-banner {
+            position: relative;
+            width: 100%;
+            height: 150px;
+            background-image: url('https://mthree.com/site/assets/files/1365/placeholder.507x507.png');
+            background-size: cover;
+            background-position: center;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .bottom-banner::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 0, 150, 0.5), rgba(0, 204, 255, 0.5));
+            opacity: 0.4;
+            animation: pulse 5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.4;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+    </style>
+    <title>Transaction Receipt</title>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="cid:logoImage" alt="BankMthree Logo">
+    </div>
+    <h2>Transaction Receipt</h2>
+
+    <div class="table-container">
+        <!-- Transaction Details Table -->
+        <h3>Transaction Details</h3>
+        <table class="details-table">
+            <tr>
+                <th>Amount</th>
+                <td th:text="${transaction.amount} + ' ' + ${transaction.senderAccount.currency}"></td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td th:text="${formattedTimestamp}"></td>
+            </tr>
+            <tr>
+                <th>Transaction ID</th>
+                <td th:text="${transaction.id}"></td>
+            </tr>
+        </table>
+
+        <!-- Sender Information Table -->
+        <h3>Sender Information</h3>
+        <table class="details-table">
+            <tr>
+                <th>Name</th>
+                <td th:text="${transaction.sender.profile.firstName} + ' ' + ${transaction.sender.profile.lastName}"></td>
+            </tr>
+            <tr>
+                <th>Card Number</th>
+                <td th:text="${transaction.senderAccount.cardNumber}"></td>
+            </tr>
+        </table>
+
+        <!-- Receiver Information Table -->
+        <h3>Receiver Information</h3>
+        <table class="details-table">
+            <tr>
+                <th>Name</th>
+                <td th:text="${transaction.receiver.profile.firstName} + ' ' + ${transaction.receiver.profile.lastName}"></td>
+            </tr>
+            <tr>
+                <th>Card Number</th>
+                <td th:text="${transaction.receiverAccount.cardNumber}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="footer">
+        <p>Thank you for using our service!<br>Best Regards, BankMthree Team</p>
+        <div class="footer-links">
+            <a href="https://www.facebook.com">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
+                     alt="Facebook">
+            </a>
+            <a href="https://www.twitter.com">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg" alt="Twitter">
+            </a>
+            <a href="https://www.linkedin.com">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg" alt="LinkedIn">
+            </a>
+        </div>
+        <div class="footer">
+            <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <a href="#">Contact Us</a>
+        </div>
+    </div>
+
+    <!-- Bottom Banner Image -->
+    <div class="bottom-banner"></div>
+</div>
+</body>
+</html>
