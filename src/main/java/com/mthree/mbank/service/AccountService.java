@@ -54,4 +54,6 @@ public interface AccountService {
      */
     @Transactional
     void closeAccount(String cardNumber, String username);
+
+    Account findAccountByCardNumber(String number, String testUser);
 }
