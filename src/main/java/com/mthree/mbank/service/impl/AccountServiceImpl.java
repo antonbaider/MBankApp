@@ -15,6 +15,7 @@ import com.mthree.mbank.service.AccountService;
 import com.mthree.mbank.util.CardNumberGenerator;
 import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -38,6 +39,7 @@ public class AccountServiceImpl implements AccountService {
     private final UserMapper userMapper;
     private final int maxAttempts;
 
+    @Autowired
     public AccountServiceImpl(AccountRepository accountRepository,
                               CardNumberGenerator cardNumberGenerator,
                               UserMapper userMapper,
@@ -56,8 +58,8 @@ public class AccountServiceImpl implements AccountService {
      * @param user     The User entity for whom the account is being created.
      * @throws UniqueCardNumberGenerationException if a unique card number cannot be generated.
      */
-    @Transactional
     @Override
+    @Transactional
     public Account createAndInitializeAccount(CurrencyType currency, User user) {
         log.info(MessageConstants.Logs.CREATING_NEW_ACCOUNT, user.getUsername(), currency);
         String cardNumber = generateUniqueCardNumber();
@@ -81,9 +83,9 @@ public class AccountServiceImpl implements AccountService {
      * @param currency The currency type for the new account.
      * @throws AccountAlreadyExistsException if an account with the specified currency already exists.
      */
+    @Override
     @Transactional
     @CachePut(value = "accounts", key = "#user.username + '-' + #currency")
-    @Override
     public Account createAccount(User user, CurrencyType currency) {
         checkForExistingAccount(user, currency); // Check for an existing account
         return createAndInitializeAccount(currency, user);
@@ -95,9 +97,9 @@ public class AccountServiceImpl implements AccountService {
      * @param user The User entity whose accounts are to be retrieved.
      * @return A set of AccountDTOs representing the user's accounts.
      */
+    @Override
     @Transactional(readOnly = true)
     @CacheEvict(value = "userAccounts", key = "#user.username")
-    @Override
     public Set<AccountDTO> getUserAccounts(User user) {
         log.info("Retrieving accounts for user: {}", user.getUsername());
 
@@ -121,9 +123,9 @@ public class AccountServiceImpl implements AccountService {
      * @throws AccountsNotFoundException      if the account is not found for the user.
      * @throws AccountBalanceNotZeroException if the account balance is not zero.
      */
+    @Override
     @Transactional
     @CacheEvict(value = "userAccounts", key = "#username")
-    @Override
     public void closeAccount(String cardNumber, String username) {
         log.info(MessageConstants.Logs.CLOSING_ACCOUNT, cardNumber, username);
 
