@@ -30,11 +30,11 @@ public class Transaction {
     @JoinColumn(name = "receiver_id")
     private User receiver;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "sender_account_id")
     private Account senderAccount;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "receiver_account_id")
     private Account receiverAccount;
 }
