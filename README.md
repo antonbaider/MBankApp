@@ -86,5 +86,5 @@ To configure MthreeBank App, set the following environment variables:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/mthreebank-app.git
+   git clone https://github.com/antonbaider/MBankApp.git
    cd mthreebank-app
