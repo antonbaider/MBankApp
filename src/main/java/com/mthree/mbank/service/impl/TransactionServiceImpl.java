@@ -3,6 +3,7 @@ package com.mthree.mbank.service.impl;
 import com.mthree.mbank.constants.MessageConstants;
 import com.mthree.mbank.dto.transaction.TransactionResponse;
 import com.mthree.mbank.dto.transaction.TransferRequest;
+import com.mthree.mbank.exception.transaction.InvalidCardNumberException;
 import com.mthree.mbank.service.TransactionService;
 import com.mthree.mbank.entity.Account;
 import com.mthree.mbank.entity.Transaction;
@@ -62,7 +63,6 @@ public class TransactionServiceImpl implements TransactionService {
     @CacheEvict(value = "transactionHistory", allEntries = true) // Clear cache for transaction history
     @Override
     public Transaction transferMoneyUsingCardNumbers(@Valid TransferRequest transferRequest, String username) {
-        try {
             // Logging the start of the transfer
             log.info(MessageConstants.Logs.TRANSFER_STARTED,
                     maskCardNumber(transferRequest.getSenderCardNumber()),
@@ -110,13 +110,6 @@ public class TransactionServiceImpl implements TransactionService {
             emailService.sendTransactionEmail(completedTransaction);
 
             return completedTransaction; // Return the completed transaction
-
-        } catch (Exception e) {
-            // Log the error for debugging purposes
-            log.error(MessageConstants.Logs.GENERAL_OPERATION_FAILED, e.getMessage(), e);
-            // Handle specific exceptions as needed or rethrow to trigger transaction rollback
-            throw new RuntimeException(MessageConstants.Logs.GENERAL_OPERATION_FAILED + e.getMessage(), e);
-        }
     }
 
     /**
@@ -132,7 +125,6 @@ public class TransactionServiceImpl implements TransactionService {
     @CacheEvict(value = "transactionHistory", allEntries = true) // Clear cache for transaction history
     @Override
     public Transaction transferMoneyBetweenUsers(@Valid Long senderUserId, @Valid Long receiverUserId, @Valid @Positive BigDecimal amount, @NotBlank String username) {
-        try {
             // Fetching sender and receiver accounts by user IDs
             Account sender = accountRepository.findById(senderUserId)
                     .orElseThrow(() -> new AccountsNotFoundException(MessageConstants.Exceptions.SENDER_ACCOUNT_NOT_FOUND));
@@ -165,19 +157,11 @@ public class TransactionServiceImpl implements TransactionService {
             emailService.sendTransactionEmail(completedTransaction);
 
             return completedTransaction; // Return the completed transaction
-
-        } catch (Exception e) {
-            // Log the error for debugging purposes
-            log.error(MessageConstants.Logs.GENERAL_OPERATION_FAILED, e.getMessage(), e);
-            // Handle specific exceptions as needed or rethrow to trigger transaction rollback
-            throw new RuntimeException(MessageConstants.Logs.GENERAL_OPERATION_FAILED + e.getMessage(), e);
-        }
     }
 
     // Validation of transfer request
     private void UserTransferRequestValidation(Account sender, Account receiver) {
         if (sender.getId().equals(receiver.getId())) {
-            log.warn(MessageConstants.Logs.SAME_ACCOUNT_TRANSFER_LOG, maskCardNumber(sender.getCardNumber()));
             throw new IllegalArgumentException(MessageConstants.Exceptions.SAME_ACCOUNT_TRANSFER);
         }
     }
@@ -204,7 +188,6 @@ public class TransactionServiceImpl implements TransactionService {
     private void validateTransferRequest(TransferRequest transferRequest) {
         // Prevent transferring to the same account
         if (transferRequest.getSenderCardNumber().equals(transferRequest.getReceiverCardNumber())) {
-            log.warn(MessageConstants.Logs.SAME_ACCOUNT_TRANSFER_LOG, maskCardNumber(transferRequest.getSenderCardNumber()));
             throw new IllegalArgumentException(MessageConstants.Exceptions.SAME_ACCOUNT_TRANSFER);
         }
     }
@@ -226,40 +209,63 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Check for authorization
         if (!isAdmin && !sender.getUser().getUsername().equals(username)) {
-            log.warn(MessageConstants.ErrorCodes.UNAUTHORIZED_TRANSFER, username);
             throw new UnauthorizedTransferException(MessageConstants.Exceptions.UNAUTHORIZED_TRANSFER);
         }
 
         // Check for currency mismatch
         if (!sender.getCurrency().equals(receiver.getCurrency())) {
-            log.warn(MessageConstants.Logs.CURRENCY_MISMATCH_LOG);
             throw new IllegalArgumentException(MessageConstants.Exceptions.CURRENCY_MISMATCH);
         }
 
         // Check for valid transfer amount
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            log.warn(MessageConstants.Logs.INVALID_TRANSFER_AMOUNT, amount);
             throw new IllegalArgumentException(MessageConstants.Exceptions.INVALID_TRANSFER_AMOUNT);
         }
 
         // Check for sufficient funds
         if (!isAdmin && sender.getBalance().compareTo(amount) < 0) {
-            log.warn(MessageConstants.Logs.INSUFFICIENT_FUNDS, username, maskCardNumber(sender.getCardNumber()));
             throw new IllegalArgumentException(MessageConstants.Exceptions.INSUFFICIENT_BALANCE);
         }
     }
 
     /**
-     * Validates the format of the card number.
+     * Validates the format of the card number using length check and Luhn algorithm.
      *
      * @param cardNumber the card number to validate
      */
     private void validateCardNumberFormat(String cardNumber) {
-        if (cardNumber == null || !cardNumber.matches("\\d{16}")) { // Example: 16-digit card number
-            log.warn(MessageConstants.Logs.INVALID_CARD_NUMBER_FORMAT_LOG, cardNumber);
-            throw new IllegalArgumentException(MessageConstants.Exceptions.INVALID_CARD_NUMBER_FORMAT);
+        if (cardNumber == null || !cardNumber.matches("\\d{13,19}")) { // 13 to 19 digits
+            throw new InvalidCardNumberException(MessageConstants.Exceptions.INVALID_CARD_NUMBER_FORMAT);
+        }
+
+        if (!isValidLuhn(cardNumber)) {
+            throw new InvalidCardNumberException(MessageConstants.Exceptions.INVALID_CARD_NUMBER_FORMAT);
         }
     }
+
+    /**
+     * Implements the Luhn algorithm to validate the card number.
+     *
+     * @param cardNumber the card number to validate
+     * @return true if valid, false otherwise
+     */
+    private boolean isValidLuhn(String cardNumber) {
+        int sum = 0;
+        boolean alternate = false;
+        for (int i = cardNumber.length() - 1; i >= 0; i--) {
+            int n = Integer.parseInt(cardNumber.substring(i, i + 1));
+            if (alternate) {
+                n *= 2;
+                if (n > 9) {
+                    n = (n % 10) + 1;
+                }
+            }
+            sum += n;
+            alternate = !alternate;
+        }
+        return (sum % 10 == 0);
+    }
+
 
     /**
      * Masks the card number for security purposes.

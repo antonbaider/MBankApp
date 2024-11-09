@@ -80,6 +80,8 @@ public final class MessageConstants {
         public static final String INVALID_TRANSFER_AMOUNT = "Invalid transfer amount: {}";
         public static final String INSUFFICIENT_FUNDS = "Insufficient funds for user {} on account {}";
         public static final String INVALID_CARD_NUMBER_FORMAT_LOG = "Invalid card number format: {}";
+        public static final String INVALID_CARD_NUMBER_LUHN_LOG = "Invalid card number LUHN format: {}";
+
         public static final String CLEARING_CACHE_FOR_USER = "Clearing cache for user ID {}";
         public static final String SAME_ACCOUNT_TRANSFER_LOG = "Cannot transfer money to the same account.";
 

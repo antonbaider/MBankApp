@@ -3,6 +3,7 @@ package com.mthree.mbank.exception;
 import com.mthree.mbank.constants.MessageConstants;
 import com.mthree.mbank.exception.account.*;
 import com.mthree.mbank.exception.transaction.InsufficientFundsException;
+import com.mthree.mbank.exception.transaction.InvalidCardNumberException;
 import com.mthree.mbank.exception.transaction.UnauthorizedTransferException;
 import com.mthree.mbank.exception.user.*;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,8 @@ public class GlobalExceptionHandler {
         log.error("Error occurred: {} (Code: {}, Status: {}) - Details: {}", message, errorCode, status, details);
 
         // Create a new CustomErrorResponse object with all necessary fields
-        CustomErrorResponse errorResponse = new CustomErrorResponse(status.value(), // HTTP status code (e.g., 400)
+        CustomErrorResponse errorResponse = new CustomErrorResponse(
+                status.value(), // HTTP status code (e.g., 400)
                 status.getReasonPhrase(), // HTTP status reason (e.g., "Bad Request")
                 message, // Detailed error message
                 errorCode, // Specific error code
@@ -68,10 +70,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CustomErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest request) {
         // Extract field errors and map them to a field-specific error message
-        Map<String, String> details = ex.getBindingResult().getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, // Key: Field name
-                FieldError::getDefaultMessage, // Value: Error message
-                (existing, replacement) -> existing // Handle duplicate keys by keeping the first occurrence
-        ));
+        Map<String, String> details = ex.getBindingResult().getFieldErrors().stream()
+                .collect(Collectors.toMap(
+                        FieldError::getField, // Key: Field name
+                        FieldError::getDefaultMessage, // Value: Error message
+                        (existing, replacement) -> existing // Handle duplicate keys by keeping the first occurrence
+                ));
 
         // Define a generic validation failed message
         String message = MessageConstants.Exceptions.VALIDATION_FAILED;
@@ -243,38 +247,6 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handles exceptions when an unauthorized transfer is attempted.
-     * This occurs when a user tries to transfer funds from an account they do not own.
-     *
-     * @param ex      The UnauthorizedTransferException indicating the unauthorized action.
-     * @param request The web request during which the exception was thrown.
-     * @return A ResponseEntity with a CustomErrorResponse indicating the transfer is unauthorized.
-     */
-    @ExceptionHandler(UnauthorizedTransferException.class)
-    public ResponseEntity<CustomErrorResponse> handleUnauthorizedTransferException(UnauthorizedTransferException ex, WebRequest request) {
-        // Define additional error details, such as the cause of the exception
-        Map<String, String> details = Map.of("cause", ex.getMessage());
-        // Build and return the error response with HTTP 403 Forbidden
-        return buildErrorResponse(ex.getMessage(), "UNAUTHORIZED_TRANSFER", HttpStatus.FORBIDDEN, request, details);
-    }
-
-    /**
-     * Handles exceptions when the receiver account is not found.
-     * This can occur when attempting to transfer funds to a non-existent account.
-     *
-     * @param ex      The ReceiverAccountNotFoundException indicating the missing receiver account.
-     * @param request The web request during which the exception was thrown.
-     * @return A ResponseEntity with a CustomErrorResponse indicating the receiver account was not found.
-     */
-    @ExceptionHandler(ReceiverAccountNotFoundException.class)
-    public ResponseEntity<CustomErrorResponse> handleReceiverAccountNotFoundException(ReceiverAccountNotFoundException ex, WebRequest request) {
-        // Define additional error details, such as the cause of the exception
-        Map<String, String> details = Map.of("cause", ex.getMessage());
-        // Build and return the error response with HTTP 404 Not Found
-        return buildErrorResponse(ex.getMessage(), "RECEIVER_ACCOUNT_NOT_FOUND", HttpStatus.NOT_FOUND, request, details);
-    }
-
-    /**
      * Handles InsufficientFundsException, which is thrown when a user attempts
      * to perform a transaction that exceeds their account balance.
      *
@@ -288,7 +260,8 @@ public class GlobalExceptionHandler {
         Map<String, String> details = Map.of("cause", ex.getMessage());
 
         // Build and return a standardized error response using the existing method
-        return buildErrorResponse(ex.getMessage(),                     // The error message to be displayed
+        return buildErrorResponse(
+                ex.getMessage(),                     // The error message to be displayed
                 "INSUFFICIENT_FUNDS",               // A unique error code to identify the error type
                 HttpStatus.BAD_REQUEST,              // HTTP status code indicating a client-side error
                 request,                             // The current web request for additional context
@@ -341,6 +314,25 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handles InvalidCardNumberException.
+     *
+     * @param ex      The InvalidCardNumberException thrown.
+     * @param request The web request during which the exception was thrown.
+     * @return A ResponseEntity with a CustomErrorResponse indicating the invalid card number.
+     */
+    @ExceptionHandler(InvalidCardNumberException.class)
+    public ResponseEntity<CustomErrorResponse> handleInvalidCardNumberException(InvalidCardNumberException ex, WebRequest request) {
+        // Log a warning instead of an error for client-side issues
+        log.warn("Invalid card number format: {}", ex.getMessage());
+
+        // Prepare error details without exposing sensitive information
+        Map<String, String> details = Map.of("cause", ex.getMessage());
+
+        // Build and return the error response with HTTP 400 Bad Request
+        return buildErrorResponse(ex.getMessage(), "INVALID_CARD_NUMBER", HttpStatus.BAD_REQUEST, request, details);
+    }
+
+    /**
      * Handles exceptions when the provided username is not found.
      * This can occur when a user attempts to log in or access a resource with a non-existent username.
      *
@@ -368,7 +360,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UserUnauthorizedException.class)
     public ResponseEntity<CustomErrorResponse> handleUserUnauthorizedException(UserUnauthorizedException ex, WebRequest request) {
-        // Prepare additional error details to be included in the response
+        // Prepare additional error details, such as the cause of the exception
         Map<String, String> details = Map.of("cause", ex.getMessage());
 
         // Build and return a standardized error response using the existing method
@@ -383,15 +375,15 @@ public class GlobalExceptionHandler {
      * @param request The web request during which the exception was thrown.
      * @return A ResponseEntity with a CustomErrorResponse indicating an internal server error.
      */
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<CustomErrorResponse> handleAllOtherExceptions(Exception ex, WebRequest request) {
-//        // It's crucial to log the exception for internal debugging purposes,
-//        // However, avoid exposing sensitive information in logs or responses
-//        // Example: log.error("Unhandled exception occurred: ", ex);
-//
-//        // Provide a generic cause to avoid leaking sensitive details
-//        Map<String, String> details = Map.of("cause", "An unexpected error occurred.");
-//        // Build and return the error response with HTTP 500 Internal Server Error
-//        return buildErrorResponse(MessageConstants.Exceptions.GENERAL_ERROR, "INTERNAL_ERROR", HttpStatus.INTERNAL_SERVER_ERROR, request, details);
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<CustomErrorResponse> handleAllOtherExceptions(Exception ex, WebRequest request) {
+        // Log a concise error message without stack traces
+        log.error("Unhandled exception occurred: {}", ex.getMessage());
+
+        // Provide a generic cause to avoid leaking sensitive details
+        Map<String, String> details = Map.of("cause", "An unexpected error occurred.");
+
+        // Build and return the error response with HTTP 500 Internal Server Error
+        return buildErrorResponse(MessageConstants.Exceptions.GENERAL_ERROR, "INTERNAL_ERROR", HttpStatus.INTERNAL_SERVER_ERROR, request, details);
+    }
 }
