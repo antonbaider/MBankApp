@@ -38,3 +38,4 @@ out/
 # Environment variables
 .env
 /.github/
+/target/

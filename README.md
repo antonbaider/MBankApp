@@ -1,9 +1,21 @@
-
-# 🏦 MBank App
+# 🏦 MBank App API
+[![Maven CI with Dependency Submission](https://github.com/antonbaider/MBankApp/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/antonbaider/MBankApp/actions/workflows/maven.yml)
+[![Java Docker Image CI](https://github.com/antonbaider/MBankApp/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/antonbaider/MBankApp/actions/workflows/docker-image.yml)
+[![SonarCloud](https://github.com/antonbaider/MBankApp/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/antonbaider/MBankApp/actions/workflows/build.yml)
 
 MBank App is a Java-based banking application designed to manage user transactions, account information, and provide seamless integration for modern transaction notifications via email. It features robust API documentation, transaction validation, and comprehensive security measures.
 
-🌐 FrontEnd - https://github.com/antonbaider/uMBank
+🌐 FrontEnd - https://github.com/antonbaider/uMBank.git
+---
+
+# 🔍 Overview
+
+The MBank API offers:
+- **User Management**: Register, login, view profile, and update information.
+- **Account Management**: Open, close, and list accounts.
+- **Transaction Handling**: Transfer funds between accounts and cards.
+- **Admin Operations**: Elevated access for admin functionalities.
+
 ---
 
 ## 🚀 Features
@@ -21,7 +33,7 @@ MBank App is a Java-based banking application designed to manage user transactio
 ## 💻 Technologies
 
 - ☕ **Java**
-- 🧩 **Spring Boot** (REST, JPA, Security)
+- 🧩 **Spring Boot** (REST, JPA, Security, Cache)
 - 💽 **MariaDB**
 - 📜 **Swagger** (API Documentation)
 - 🔄 **MapStruct** (for mapping DTOs)
@@ -32,7 +44,7 @@ MBank App is a Java-based banking application designed to manage user transactio
 
 ## 🛠 Environment Variables
 
-To configure MthreeBank App, set the following environment variables:
+To configure MBank App, set the following environment variables:
 
 ### 🔧 Application Settings
 
@@ -75,6 +87,147 @@ To configure MthreeBank App, set the following environment variables:
 - **`EMAIL_LOGO_PATH`**: Path to the logo image used in email notifications.
 
 ---
+
+## 🌐 Base URL
+
+All endpoints use this base URL:
+```
+{{base_url}} = http://localhost:8080/api
+```
+
+---
+
+## 🔐 Authentication
+
+Authentication is required for most endpoints and is provided through a Bearer token, obtained upon successful login.
+
+---
+
+## 🗂️ Endpoints
+
+### 👤 User Endpoints
+
+#### **Register**
+- **Endpoint**: `POST {{base_url}}/auth/register`
+- **Description**: Register a new user.
+- **Body**:
+  ```json
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "username": "johndoe",
+    "password": "SecurePassword123!",
+    "email": "johndoe@example.com",
+    "phone": "1234567890",
+    "ssn": "111-22-3333"
+  }
+  ```
+
+#### **Login**
+- **Endpoint**: `POST {{base_url}}/auth/login`
+- **Description**: Login with credentials to receive an authentication token.
+- **Body**:
+  ```json
+  {
+    "username": "johndoe",
+    "password": "SecurePassword123!"
+  }
+  ```
+
+#### **My Profile**
+- **Endpoint**: `GET {{base_url}}/users/profile`
+- **Description**: Retrieve the current user's profile details.
+
+#### **Update Info**
+- **Endpoint**: `PUT {{base_url}}/users/update`
+- **Description**: Update the current user's information.
+- **Body**:
+  ```json
+  {
+    "firstName": "UpdatedFirstName",
+    "lastName": "UpdatedLastName",
+    "email": "newemail@example.com",
+    "phone": "0987654321",
+    "password": "NewSecurePassword123!"
+  }
+  ```
+
+### 🏦 Account Endpoints
+
+#### **My Accounts**
+- **Endpoint**: `GET {{base_url}}/accounts`
+- **Description**: List all accounts associated with the user.
+
+#### **Open Account**
+- **Endpoint**: `POST {{base_url}}/accounts`
+- **Description**: Open a new account with a specified currency.
+- **Body**:
+  ```json
+  {
+    "currency": "USD"
+  }
+  ```
+
+#### **Close Account**
+- **Endpoint**: `DELETE {{base_url}}/accounts/close`
+- **Description**: Close an existing account.
+- **Body**:
+  ```json
+  {
+    "cardNumber": "1234567812345678"
+  }
+  ```
+
+### 💸 Transaction Endpoints
+
+#### **Pay by Account**
+- **Endpoint**: `POST {{base_url}}/transactions/transfer`
+- **Description**: Transfer funds between two accounts.
+- **Body**:
+  ```json
+  {
+    "senderAccountId": 1,
+    "receiverAccountId": 2,
+    "amount": 100
+  }
+  ```
+
+#### **Pay by Card**
+- **Endpoint**: `POST {{base_url}}/transactions/transferByCard`
+- **Description**: Transfer funds between two cards.
+- **Body**:
+  ```json
+  {
+    "senderCardNumber": "4000123456789010",
+    "receiverCardNumber": "4000987654321234",
+    "amount": 50
+  }
+  ```
+
+#### **Transaction History**
+- **Endpoint**: `GET {{base_url}}/transactions/history`
+- **Description**: Retrieve the transaction history for the user.
+
+### 🔑 Admin Endpoint
+
+#### **Admin Transfer**
+- **Endpoint**: `POST {{base_url}}/admin/adminTransfer`
+- **Description**: Allows an admin to transfer funds between any accounts.
+- **Body**:
+  ```json
+  {
+    "senderAccountId": 3,
+    "receiverAccountId": 4,
+    "amount": 500
+  }
+  ```
+
+---
+
+## 🧰 Postman Collection
+
+This API collection can be imported into [Postman](https://www.postman.com/) for easier testing and management. Download the collection file from the repository or create one manually using the endpoints listed above.
+
 
 ## 📖 Setup Instructions
 
