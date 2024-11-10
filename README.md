@@ -3,7 +3,7 @@
 
 MBank App is a Java-based banking application designed to manage user transactions, account information, and provide seamless integration for modern transaction notifications via email. It features robust API documentation, transaction validation, and comprehensive security measures.
 
-🌐 FrontEnd - https://github.com/antonbaider/uMBank
+🌐 FrontEnd - https://github.com/antonbaider/uMBank.git
 ---
 
 ## 🚀 Features
