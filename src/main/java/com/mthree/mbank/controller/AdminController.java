@@ -1,7 +1,7 @@
 package com.mthree.mbank.controller;
 
 import com.mthree.mbank.dto.transaction.TransactionResponse;
-import com.mthree.mbank.dto.transaction.TransferRequestByUserId;
+import com.mthree.mbank.dto.transaction.TransferRequestByAccountId;
 import com.mthree.mbank.entity.Transaction;
 import com.mthree.mbank.mapper.TransactionMapper;
 import com.mthree.mbank.service.TransactionService;
@@ -48,7 +48,7 @@ public class AdminController {
     @PostMapping("/adminTransfer")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> adminTransferMoney(
-            @Valid @RequestBody TransferRequestByUserId transferRequest,
+            @Valid @RequestBody TransferRequestByAccountId transferRequest,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         // Perform the money transfer
@@ -59,7 +59,7 @@ public class AdminController {
         return ResponseEntity.ok(new ApiResponse("Administrator Transaction Successfully Completed", response));
     }
 
-    private Transaction getTransaction(TransferRequestByUserId transferRequest, UserDetails userDetails) {
+    private Transaction getTransaction(TransferRequestByAccountId transferRequest, UserDetails userDetails) {
         return transactionService.transferMoneyBetweenUsers(
                 transferRequest.getSenderAccountId(),
                 transferRequest.getReceiverAccountId(),

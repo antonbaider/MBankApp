@@ -2,7 +2,7 @@ package com.mthree.mbank.controller;
 
 import com.mthree.mbank.dto.transaction.TransactionResponse;
 import com.mthree.mbank.dto.transaction.TransferRequest;
-import com.mthree.mbank.dto.transaction.TransferRequestByUserId;
+import com.mthree.mbank.dto.transaction.TransferRequestByAccountId;
 import com.mthree.mbank.entity.Transaction;
 import com.mthree.mbank.mapper.TransactionMapper;
 import com.mthree.mbank.service.TransactionService;
@@ -51,7 +51,7 @@ public class TransactionController {
     @PostMapping("/transfer")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> transferMoney(
-            @Valid @RequestBody TransferRequestByUserId transferRequest,
+            @Valid @RequestBody TransferRequestByAccountId transferRequest,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         // Perform the transfer operation and get the transaction response
@@ -104,7 +104,7 @@ public class TransactionController {
     }
 
     // Private helper methods for transaction response handling
-    private TransactionResponse getTransactionResponse(TransferRequestByUserId transferRequest, UserDetails userDetails) {
+    private TransactionResponse getTransactionResponse(TransferRequestByAccountId transferRequest, UserDetails userDetails) {
         Transaction transaction = transactionService.transferMoneyBetweenUsers(
                 transferRequest.getSenderAccountId(),
                 transferRequest.getReceiverAccountId(),

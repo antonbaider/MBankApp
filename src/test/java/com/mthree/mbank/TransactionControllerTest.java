@@ -4,7 +4,7 @@ import com.mthree.mbank.controller.ApiResponse;
 import com.mthree.mbank.controller.TransactionController;
 import com.mthree.mbank.dto.transaction.TransactionResponse;
 import com.mthree.mbank.dto.transaction.TransferRequest;
-import com.mthree.mbank.dto.transaction.TransferRequestByUserId;
+import com.mthree.mbank.dto.transaction.TransferRequestByAccountId;
 import com.mthree.mbank.entity.Account;
 import com.mthree.mbank.entity.Transaction;
 import com.mthree.mbank.entity.User;
@@ -82,7 +82,7 @@ public class TransactionControllerTest {
     @Test
     public void testTransferMoney() {
         // Arrange
-        TransferRequestByUserId transferRequest = new TransferRequestByUserId();
+        TransferRequestByAccountId transferRequest = new TransferRequestByAccountId();
         transferRequest.setSenderAccountId(1L);
         transferRequest.setReceiverAccountId(2L);
         transferRequest.setAmount(BigDecimal.valueOf(100));
