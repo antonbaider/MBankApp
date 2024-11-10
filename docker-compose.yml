@@ -1,0 +1,80 @@
+services:
+  app:
+    build:
+      context: /Users/antonbaider/dev/mthree/mbank/back
+      dockerfile: Dockerfile
+    image: mbank-app:latest
+    container_name: app-1
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=${SPRING_DATASOURCE_DRIVER_CLASS_NAME}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SPRING_APPLICATION_NAME=${SPRING_APPLICATION_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO}
+      - CARD_NUMBER_MAX_ATTEMPTS=${CARD_NUMBER_MAX_ATTEMPTS}
+      - SPRING_MAIL_HOST=${SPRING_MAIL_HOST}
+      - SPRING_MAIL_PORT=${SPRING_MAIL_PORT}
+      - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST=${SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST}
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL=${SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL}
+      - RECIPIENT_EMAIL=${RECIPIENT_EMAIL}
+      - PDF_LOGO_PATH=${PDF_LOGO_PATH}
+      - PDF_FOOTER_IMAGE_PATH=${PDF_FOOTER_IMAGE_PATH}
+      - EMAIL_LOGO_PATH=${EMAIL_LOGO_PATH}
+    volumes:
+      - /Users/antonbaider/dev/mthree/mbank/back/target/MBank-0.0.1-SNAPSHOT.jar:/app/app.jar
+      - /Users/antonbaider/dev/mthree/mbank/back/src/main/resources/images/logo.jpg:/app/logo.jpg
+      - /Users/antonbaider/dev/mthree/mbank/back/src/main/resources/images/mthree_cover.jpeg:/app/mthree_cover.jpeg
+    depends_on:
+      - db
+    networks:
+      - mbank-network
+
+  db:
+    image: mariadb:latest
+    container_name: mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mbank-network
+
+  frontend:
+    build:
+      context: /Users/antonbaider/dev/mthree/mbank/front
+      dockerfile: Dockerfile
+    image: mbank-frontend:latest
+    container_name: frontend
+    ports:
+      - "80:80"  # Serve on port 80
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+    depends_on:
+      - app
+    networks:
+      - mbank-network
+
+
+volumes:
+  db-data:
+
+networks:
+  mbank-network:
+    driver: bridge
