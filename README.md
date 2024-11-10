@@ -1,7 +1,6 @@
 # 🏦 MBank App API
 [![Maven CI with Dependency Submission](https://github.com/antonbaider/MBankApp/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/antonbaider/MBankApp/actions/workflows/maven.yml)
 [![Java Docker Image CI](https://github.com/antonbaider/MBankApp/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/antonbaider/MBankApp/actions/workflows/docker-image.yml)
-
 [![SonarCloud](https://github.com/antonbaider/MBankApp/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/antonbaider/MBankApp/actions/workflows/build.yml)
 
 MBank App is a Java-based banking application designed to manage user transactions, account information, and provide seamless integration for modern transaction notifications via email. It features robust API documentation, transaction validation, and comprehensive security measures.
@@ -18,7 +17,7 @@ The MBank API offers:
 - **Transaction Handling**: Transfer funds between accounts and cards.
 - **Admin Operations**: Elevated access for admin functionalities.
 
-=======
+---
 
 ## 🚀 Features
 
