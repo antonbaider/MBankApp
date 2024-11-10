@@ -4,10 +4,12 @@ import com.mthree.mbank.entity.Account;
 import com.mthree.mbank.entity.User;
 import com.mthree.mbank.entity.enums.CurrencyType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.Set;
 
+@Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
     boolean existsByCardNumber(String cardNumber);
 
