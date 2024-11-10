@@ -1,3 +1,4 @@
+
 # 🏦 MBank App
 
 MBank App is a Java-based banking application designed to manage user transactions, account information, and provide seamless integration for modern transaction notifications via email. It features robust API documentation, transaction validation, and comprehensive security measures.
@@ -12,7 +13,7 @@ MBank App is a Java-based banking application designed to manage user transactio
 - 📧 **Configurable Notifications**: Sends branded generative PDFs and formatted email notifications after each transaction.
 - 🔐 **Data Security**: Masks sensitive information such as passwords, SSNs, and card numbers.
 - ⚡ **Caching**: Implements caching to improve performance.
-- 💾 **Database**: MySQL for storing user and transaction data.
+- 💾 **Database**: MariaDB for storing user and transaction data.
 
 ---
 
@@ -20,7 +21,7 @@ MBank App is a Java-based banking application designed to manage user transactio
 
 - ☕ **Java**
 - 🧩 **Spring Boot** (REST, JPA, Security)
-- 💽 **MySQL**
+- 💽 **MariaDB**
 - 📜 **Swagger** (API Documentation)
 - 🔄 **MapStruct** (for mapping DTOs)
 - ✉️ **Mail API** (for email notifications)
@@ -35,18 +36,18 @@ To configure MthreeBank App, set the following environment variables:
 ### 🔧 Application Settings
 
 - **`SPRING_APPLICATION_NAME`**: Sets the application name for Spring Boot. This helps identify the app in logs and configurations.
-  
+
 ### 🔐 JWT Authentication
 
 - **`JWT_SECRET`**: Secret key used to sign JWT tokens for securing API endpoints.
 - **`JWT_EXPIRATION`**: Expiration time for the JWT tokens (in milliseconds). Adjust based on session requirements.
 
-### 💾 MySQL Database Connection Settings
+### 💾 MariaDB Database Connection Settings
 
-- **`SPRING_DATASOURCE_URL`**: JDBC URL for the MySQL database connection.
-- **`SPRING_DATASOURCE_USERNAME`**: Username for the MySQL database.
-- **`SPRING_DATASOURCE_PASSWORD`**: Password for the MySQL database.
-- **`SPRING_DATASOURCE_DRIVER_CLASS_NAME`**: Driver class for MySQL (typically `com.mysql.cj.jdbc.Driver`).
+- **`SPRING_DATASOURCE_URL`**: JDBC URL for the MariaDB database connection.
+- **`SPRING_DATASOURCE_USERNAME`**: Username for the MariaDB database.
+- **`SPRING_DATASOURCE_PASSWORD`**: Password for the MariaDB database.
+- **`SPRING_DATASOURCE_DRIVER_CLASS_NAME`**: Driver class for MariaDB (typically `org.mariadb.jdbc.Driver`).
 
 ### 🔄 Hibernate Configuration
 
@@ -79,7 +80,7 @@ To configure MthreeBank App, set the following environment variables:
 ### Prerequisites
 
 - 🖥 **JDK** 11 or higher
-- 💽 **MySQL database**
+- 💽 **MariaDB database**
 - 🧩 **Maven**
 
 ### Installation
@@ -87,4 +88,52 @@ To configure MthreeBank App, set the following environment variables:
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/antonbaider/MBankApp.git
-   cd mthreebank-app
+   cd MBankApp
+   ```
+
+2. **Build the project with Maven**:
+   ```bash
+   mvn clean install
+   ```
+
+3. **Run the application**:
+   ```bash
+   java -jar target/MBankApp-0.0.1-SNAPSHOT.jar
+   ```
+
+---
+
+## 🐳 Using Docker
+
+The project includes a Docker setup to run the application and MariaDB as services.
+
+### Docker Compose Setup
+
+1. **Ensure Docker and Docker Compose are installed.**
+
+2. **Run the following command** in the root directory where `docker-compose.yml` is located:
+   ```bash
+   docker-compose up -d
+   ```
+
+This command will start the MBank App and a MariaDB instance. The app will be accessible at `http://localhost:8080`, and MariaDB will be running on `localhost:3307`.
+
+3. **Shut down the containers**:
+   ```bash
+   docker-compose down
+   ```
+
+---
+
+## 📚 API Documentation
+
+The application uses Swagger for API documentation. Access it at:
+```
+http://localhost:8080/swagger-ui.html
+```
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License.
