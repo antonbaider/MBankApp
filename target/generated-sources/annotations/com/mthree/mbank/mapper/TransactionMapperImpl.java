@@ -4,14 +4,13 @@ import com.mthree.mbank.dto.transaction.TransactionResponse;
 import com.mthree.mbank.entity.Account;
 import com.mthree.mbank.entity.Transaction;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-11-08T23:23:37+0100",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23 (Oracle Corporation)"
+    date = "2024-11-10T17:28:22+0100",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.12 (OpenLogic)"
 )
 @Component
 public class TransactionMapperImpl implements TransactionMapper {
@@ -22,24 +21,18 @@ public class TransactionMapperImpl implements TransactionMapper {
             return null;
         }
 
-        Long transactionId = null;
-        Long senderAccountId = null;
-        Long receiverAccountId = null;
-        BigDecimal amount = null;
-        LocalDateTime timestamp = null;
+        TransactionResponse transactionResponse = new TransactionResponse();
 
-        transactionId = transaction.getId();
-        senderAccountId = transactionSenderAccountId( transaction );
-        receiverAccountId = transactionReceiverAccountId( transaction );
-        amount = transaction.getAmount();
-        timestamp = transaction.getTimestamp();
+        transactionResponse.setTransactionId( transaction.getId() );
+        transactionResponse.setSenderAccountId( transactionSenderAccountId( transaction ) );
+        transactionResponse.setReceiverAccountId( transactionReceiverAccountId( transaction ) );
+        transactionResponse.setAmount( transaction.getAmount() );
+        transactionResponse.setTimestamp( transaction.getTimestamp() );
 
-        String senderCardNumber = transaction.getSenderAccount() != null ? transaction.getSenderAccount().getCardNumber() : null;
-        String receiverCardNumber = transaction.getReceiverAccount() != null ? transaction.getReceiverAccount().getCardNumber() : null;
-        String currency = transaction.getSenderAccount() != null ? transaction.getSenderAccount().getCurrency().toString() : null;
-        BigDecimal balanceAfter = transaction.getSenderAccount() != null ? transaction.getSenderAccount().getBalance() : null;
-
-        TransactionResponse transactionResponse = new TransactionResponse( transactionId, senderAccountId, senderCardNumber, receiverAccountId, receiverCardNumber, amount, currency, balanceAfter, timestamp );
+        transactionResponse.setSenderCardNumber( transaction.getSenderAccount() != null ? transaction.getSenderAccount().getCardNumber() : null );
+        transactionResponse.setReceiverCardNumber( transaction.getReceiverAccount() != null ? transaction.getReceiverAccount().getCardNumber() : null );
+        transactionResponse.setCurrency( transaction.getSenderAccount() != null ? transaction.getSenderAccount().getCurrency().toString() : null );
+        transactionResponse.setBalanceAfter( transaction.getSenderAccount() != null ? transaction.getSenderAccount().getBalance() : null );
 
         return transactionResponse;
     }

@@ -24,6 +24,7 @@ public interface TransactionMapper {
     TransactionResponse toResponse(Transaction transaction);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "timestamp", ignore = true)
     @Mapping(source = "amount", target = "amount")
     @Mapping(source = "sender", target = "senderAccount")
     @Mapping(source = "receiver", target = "receiverAccount")
