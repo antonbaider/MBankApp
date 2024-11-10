@@ -29,6 +29,9 @@ services:
       - PDF_LOGO_PATH=${PDF_LOGO_PATH}
       - PDF_FOOTER_IMAGE_PATH=${PDF_FOOTER_IMAGE_PATH}
       - EMAIL_LOGO_PATH=${EMAIL_LOGO_PATH}
+      - SPRING_JPA_OPEN=${SPRING_JPA_OPEN}
+      - SPRING_API_DOC_PATH=${SPRING_API_DOC_PATH}
+      - SPRING_SWAGGER_UI_PATH=${SPRING_SWAGGER_UI_PATH}
     volumes:
       - /Users/antonbaider/dev/mthree/mbank/back/target/MBank-0.0.1-SNAPSHOT.jar:/app/app.jar
       - /Users/antonbaider/dev/mthree/mbank/back/src/main/resources/images/logo.jpg:/app/logo.jpg
