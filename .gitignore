@@ -39,3 +39,4 @@ out/
 .env
 /.github/
 /target/
+.DS_Store
