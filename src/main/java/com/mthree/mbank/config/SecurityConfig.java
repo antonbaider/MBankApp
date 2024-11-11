@@ -61,7 +61,7 @@ public class SecurityConfig {
                         // Allow unauthenticated access only to specific endpoints
                         .requestMatchers("/api/auth/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         // User-specific endpoints need USER role
-                        .requestMatchers("/api/users/**").hasRole("USER")
+                        .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
                         // Admin-specific endpoints need ADMIN role
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // All other requests require authentication
