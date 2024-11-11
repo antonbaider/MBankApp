@@ -375,15 +375,15 @@ public class GlobalExceptionHandler {
      * @param request The web request during which the exception was thrown.
      * @return A ResponseEntity with a CustomErrorResponse indicating an internal server error.
      */
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<CustomErrorResponse> handleAllOtherExceptions(Exception ex, WebRequest request) {
-//        // Log a concise error message without stack traces
-//        log.error("Unhandled exception occurred: {}", ex.getMessage());
-//
-//        // Provide a generic cause to avoid leaking sensitive details
-//        Map<String, String> details = Map.of("cause", "An unexpected error occurred.");
-//
-//        // Build and return the error response with HTTP 500 Internal Server Error
-//        return buildErrorResponse(MessageConstants.Exceptions.GENERAL_ERROR, "INTERNAL_ERROR", HttpStatus.INTERNAL_SERVER_ERROR, request, details);
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<CustomErrorResponse> handleAllOtherExceptions(Exception ex, WebRequest request) {
+        // Log a concise error message without stack traces
+        log.error("Unhandled exception occurred: {}", ex.getMessage());
+
+        // Provide a generic cause to avoid leaking sensitive details
+        Map<String, String> details = Map.of("cause", "An unexpected error occurred.");
+
+        // Build and return the error response with HTTP 500 Internal Server Error
+        return buildErrorResponse(MessageConstants.Exceptions.GENERAL_ERROR, "INTERNAL_ERROR", HttpStatus.INTERNAL_SERVER_ERROR, request, details);
+    }
 }

@@ -27,6 +27,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,7 +80,7 @@ public class TransactionServiceImpl implements TransactionService {
             Account sender = accountRepository.findByCardNumber(transferRequest.getSenderCardNumber())
                     .orElseThrow(() -> new AccountsNotFoundException(MessageConstants.Exceptions.SENDER_ACCOUNT_NOT_FOUND));
             Account receiver = accountRepository.findByCardNumber(transferRequest.getReceiverCardNumber())
-                    .orElseThrow(() -> new ReceiverAccountNotFoundException(MessageConstants.Exceptions.RECEIVER_ACCOUNT_NOT_FOUND));
+                    .orElseThrow(() -> new AccountsNotFoundException(MessageConstants.Exceptions.RECEIVER_ACCOUNT_NOT_FOUND));
 
             // Validating the transfer details
             validateTransfer(sender, receiver, transferRequest.getAmount(), username);
