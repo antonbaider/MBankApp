@@ -66,14 +66,18 @@ services:
     image: mbank-frontend:latest
     container_name: frontend
     ports:
-      - "80:80"  # Serve on port 80
+      - "3000:80"
+    volumes:
+      - /Users/antonbaider/dev/mthree/mbank/front/nginx/ssl:/ssl
     environment:
       - VITE_API_URL=${VITE_API_URL}
+      - VITE_SSL_CERT_PATH=${VITE_SSL_CERT_PATH}
+      - VITE_SSL_KEY_PATH=${VITE_SSL_KEY_PATH}
     depends_on:
       - app
     networks:
       - mbank-network
-
+    command: npm run dev
 
 volumes:
   db-data:
